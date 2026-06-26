@@ -1,0 +1,42 @@
+# Local Codex/app metadata
+.agents/
+.codex/
+
+# Temporary work files and browser profiles
+work/
+tmp/
+temp/
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.vite/
+.next/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and caches
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.cache/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Generated screenshots / QA artifacts
+*.tmp
+*.bak
+
+# Design references not required for website runtime
+outputs/**/concept.png
