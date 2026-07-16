@@ -84,5 +84,6 @@ Netlify 项目后台：
 - 线上地址：[https://personal-bookmark-site.netlify.app](https://personal-bookmark-site.netlify.app)
 - 已完成：改为云端收藏，新增网页归档、阅读状态、归档阅读入口、原链接入口和备份导出接口。
 - 后端：Netlify Functions + Netlify Blobs，接口包括 `/api/bookmarks`、`/api/archive/:id`、`/api/archive-asset`、`/api/backup`。
+- GitHub：本次增强已推送到 `main`，提交号 `2d4312b`。
 - 验证：线上页面显示“云端同步”，收藏 API 和备份 API 均返回 200；测试收藏 `https://example.com/` 可打开本站归档内容。
 - 注意：网页归档为尽力保存；登录、付费、反爬或版权限制页面可能只保存可读正文、原链接和失败原因。
