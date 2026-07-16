@@ -281,6 +281,7 @@ function renderDetail(item) {
       <a class="ghost-button button-link" href="${escapeAttribute(item.url)}" target="_blank" rel="noreferrer">打开原链接</a>
     </div>
     ${item.archiveError ? `<div class="warning-box">归档提示：${escapeHtml(item.archiveError)}</div>` : ""}
+    ${renderManualArchiveBox(item)}
     <div class="detail-block">
       <strong>自动标签</strong>
       <div class="tag-row">${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
@@ -314,6 +315,18 @@ function renderDetail(item) {
 
 function renderStatusButton(item, status) {
   return `<button class="filter-tab ${item.status === status ? "active" : ""}" data-set-status="${status}" type="button">${statusLabels[status]}</button>`;
+}
+
+function renderManualArchiveBox(item) {
+  if (!usingCloud || item.archiveStatus !== "failed") return "";
+  return `
+    <div class="manual-archive-box">
+      <strong>手动补充归档正文</strong>
+      <p>如果微信、知乎、B站等页面限制抓取，可以把正文或关键内容粘贴在这里，本站会保存成可离线阅读的归档。</p>
+      <textarea id="manualArchiveInput" rows="6" placeholder="粘贴文章正文、视频要点、摘要或你认为以后必须保留的内容"></textarea>
+      <button class="primary-button" data-action="save-manual-archive" type="button">保存为本站归档</button>
+    </div>
+  `;
 }
 
 function suggestionFor(item) {
@@ -407,6 +420,21 @@ async function updateSelected(patch) {
   render();
 }
 
+async function saveManualArchive() {
+  const selected = items.find((item) => item.id === selectedId);
+  const content = document.querySelector("#manualArchiveInput")?.value.trim() || "";
+  if (!selected || !content) return;
+  const response = await fetch(`/api/manual-archive/${encodeURIComponent(selected.id)}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ content })
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "手动归档失败");
+  items = items.map((item) => item.id === selected.id ? data.item : item);
+  render();
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -469,6 +497,7 @@ document.addEventListener("click", async (event) => {
     if (action === "save-reading-note") {
       await updateSelected({ readingNote: document.querySelector("#readingNoteInput")?.value || "" });
     }
+    if (action === "save-manual-archive") await saveManualArchive();
   } catch (error) {
     alert(error.message || "操作失败");
   }
@@ -515,13 +544,13 @@ els.importForm.addEventListener("submit", async (event) => {
 
 els.exportBtn.addEventListener("click", async () => {
   if (usingCloud) {
-    const response = await fetch("/api/backup");
+    const response = await fetch("/api/backup.zip");
     if (!response.ok) {
-      alert("云端备份导出失败，请稍后重试。");
+      alert("完整备份包导出失败，请稍后重试。");
       return;
     }
-    const data = await response.json();
-    downloadJson(data, `我的收藏库-云端备份-${new Date().toISOString().slice(0, 10)}.json`);
+    const blob = await response.blob();
+    downloadBlob(blob, `我的收藏库-完整备份-${new Date().toISOString().slice(0, 10)}.zip`);
     return;
   }
 
@@ -534,6 +563,10 @@ els.exportBtn.addEventListener("click", async () => {
 
 function downloadJson(data, filename) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+  downloadBlob(blob, filename);
+}
+
+function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

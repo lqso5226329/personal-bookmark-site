@@ -65,7 +65,7 @@ export function normalizeUrl(url) {
   return parsed.href;
 }
 
-function escapeHtml(value) {
+export function escapeHtml(value) {
   return String(value || "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
     "<": "&lt;",
@@ -73,6 +73,18 @@ function escapeHtml(value) {
     '"': "&quot;",
     "'": "&#039;"
   })[char]);
+}
+
+export function createReadableHtml({ title, url, note = "", content = "", archivedAt = new Date().toISOString(), reason = "" }) {
+  const safeTitle = title || url || "未命名收藏";
+  const paragraphs = String(content || "")
+    .split(/\n{2,}/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => `<p>${escapeHtml(part).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(safeTitle)}</title><style>body{max-width:820px;margin:0 auto;padding:28px 18px;font-family:"Microsoft YaHei",Arial,sans-serif;line-height:1.8;color:#17201b;background:#fbfcfa}a{color:#176b52}.meta{color:#66716a;font-size:14px;border-bottom:1px solid #dce4de;padding-bottom:16px;margin-bottom:18px;overflow-wrap:anywhere}.notice{border:1px solid #f0d29d;background:#fff8ec;color:#8b5b13;border-radius:8px;padding:10px 12px;margin:16px 0}</style></head><body><h1>${escapeHtml(safeTitle)}</h1><div class="meta">原链接：<a href="${escapeHtml(url)}">${escapeHtml(url)}</a><br>归档时间：${escapeHtml(archivedAt)}${note ? `<br>备注：${escapeHtml(note)}` : ""}</div>${reason ? `<div class="notice">${escapeHtml(reason)}</div>` : ""}${paragraphs || "<p>暂无正文。</p>"}</body></html>`;
 }
 
 function absoluteUrl(value, baseUrl) {
@@ -243,7 +255,7 @@ export async function archivePage({ id, url, title, note }) {
 <style>body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;background:#f7f8f6;color:#17201b}.archive-bar{position:sticky;top:0;z-index:9999;background:#17201b;color:#fff;padding:10px 14px;font-size:14px}.archive-bar a{color:#c8f0dc}.archive-source{opacity:.78;margin-left:8px}.archive-body{background:#fff;min-height:100vh}</style>
 </head><body><div class="archive-bar">本站归档快照 · ${escapeHtml(new Date(now).toLocaleString("zh-CN"))}<span class="archive-source">原链接：<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(url)}</a></span></div><div class="archive-body">${sanitized}</div></body></html>`;
 
-    const readableHtml = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(pageTitle)}</title><style>body{max-width:820px;margin:0 auto;padding:28px 18px;font-family:"Microsoft YaHei",Arial,sans-serif;line-height:1.8;color:#17201b;background:#fbfcfa}a{color:#176b52}.meta{color:#66716a;font-size:14px;border-bottom:1px solid #dce4de;padding-bottom:16px;margin-bottom:18px;overflow-wrap:anywhere}</style></head><body><h1>${escapeHtml(pageTitle)}</h1><div class="meta">原链接：<a href="${escapeHtml(url)}">${escapeHtml(url)}</a><br>归档时间：${escapeHtml(now)}<br>备注：${escapeHtml(note || "")}</div><p>${escapeHtml(readableText).replace(/\n/g, "</p><p>")}</p></body></html>`;
+    const readableHtml = createReadableHtml({ title: pageTitle, url, note, content: readableText, archivedAt: now });
 
     await archives.set(result.archiveKey, archiveHtml, { metadata: { url, title: pageTitle, archivedAt: now } });
     await archives.set(result.readableKey, readableHtml, { metadata: { url, title: pageTitle, archivedAt: now } });
@@ -255,7 +267,13 @@ export async function archivePage({ id, url, title, note }) {
     return result;
   } catch (error) {
     const fallbackTitle = title || url;
-    const fallbackHtml = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(fallbackTitle)}</title></head><body><h1>${escapeHtml(fallbackTitle)}</h1><p>未能完整归档此页面。</p><p>原因：${escapeHtml(error.message || "未知错误")}</p><p>原链接：<a href="${escapeHtml(url)}">${escapeHtml(url)}</a></p></body></html>`;
+    const fallbackHtml = createReadableHtml({
+      title: fallbackTitle,
+      url,
+      note,
+      archivedAt: now,
+      reason: `未能完整归档此页面。原因：${error.message || "未知错误"}`
+    });
     await archives.set(result.readableKey, fallbackHtml, { metadata: { url, title: fallbackTitle, archivedAt: now } });
     result.archiveError = error.message || "归档失败";
     result.title = fallbackTitle;

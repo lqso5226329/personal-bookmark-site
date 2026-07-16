@@ -528,6 +528,26 @@ button {
   line-height: 1.6;
 }
 
+.manual-archive-box {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #cfdbd3;
+  background: #f7faf8;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.manual-archive-box strong {
+  font-size: 13px;
+}
+
+.manual-archive-box p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .reading-note {
   display: grid;
   gap: 8px;
@@ -539,7 +559,8 @@ button {
   font-size: 13px;
 }
 
-.reading-note textarea {
+.reading-note textarea,
+.manual-archive-box textarea {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -549,7 +570,8 @@ button {
   resize: vertical;
 }
 
-.reading-note textarea:focus {
+.reading-note textarea:focus,
+.manual-archive-box textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(23, 107, 82, 0.12);
 }
