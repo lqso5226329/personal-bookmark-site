@@ -25,13 +25,25 @@
             <span>全部收藏</span>
             <strong id="countAll">0</strong>
           </button>
-          <button class="side-stat" data-status="review">
-            <span>待复核</span>
-            <strong id="countReview">0</strong>
+          <button class="side-stat" data-status="unread">
+            <span>未读</span>
+            <strong id="countUnread">0</strong>
           </button>
-          <button class="side-stat" data-status="public">
-            <span>已公开</span>
-            <strong id="countPublic">0</strong>
+          <button class="side-stat" data-status="reading">
+            <span>阅读中</span>
+            <strong id="countReading">0</strong>
+          </button>
+          <button class="side-stat" data-status="done">
+            <span>已读</span>
+            <strong id="countDone">0</strong>
+          </button>
+          <button class="side-stat" data-status="archived">
+            <span>已归档</span>
+            <strong id="countArchived">0</strong>
+          </button>
+          <button class="side-stat" data-status="failed">
+            <span>抓取失败</span>
+            <strong id="countFailed">0</strong>
           </button>
         </section>
       </aside>
@@ -58,7 +70,7 @@
           <div class="summary-metrics">
             <span><strong id="metricTotal">0</strong> 条收藏</span>
             <span><strong id="metricTags">0</strong> 个标签</span>
-            <span><strong id="metricPublic">0</strong> 条公开</span>
+            <span><strong id="metricPublic">0</strong> 条快照</span>
           </div>
         </section>
 
@@ -66,10 +78,11 @@
           <button class="filter-tab active" data-filter="all" type="button">全部</button>
           <button class="filter-tab" data-filter="工程造价" type="button">工程造价</button>
           <button class="filter-tab" data-filter="招投标" type="button">招投标</button>
-          <button class="filter-tab" data-filter="合同风险" type="button">合同风险</button>
-          <button class="filter-tab" data-filter="学习资料" type="button">学习资料</button>
-          <button class="filter-tab" data-filter="待复核" type="button">待复核</button>
-        </section>
+            <button class="filter-tab" data-filter="合同风险" type="button">合同风险</button>
+            <button class="filter-tab" data-filter="学习资料" type="button">学习资料</button>
+            <button class="filter-tab" data-filter="待复核" type="button">待复核</button>
+            <button class="filter-tab" data-filter="重要" type="button">重要</button>
+          </section>
 
         <section class="content-layout">
           <div class="collection-panel">
@@ -95,7 +108,7 @@
       <form method="dialog" class="import-card" id="importForm">
         <div class="dialog-head">
           <h2>导入链接</h2>
-          <button class="icon-button" value="cancel" aria-label="关闭" type="submit">
+          <button class="icon-button" value="cancel" aria-label="关闭" type="button" data-close-import>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19 5 17.6 17.6 5 19 6.4Z" />
             </svg>
@@ -107,15 +120,15 @@
         </label>
         <label>
           标题或说明
-          <input id="titleInput" type="text" placeholder="例如：某项目工程量清单复核方法" required />
+          <input id="titleInput" type="text" placeholder="可选：不填时会尝试从网页标题识别" />
         </label>
         <label>
           备注
           <textarea id="noteInput" rows="4" placeholder="可粘贴摘要、使用场景、风险点或待办事项"></textarea>
         </label>
         <div class="dialog-actions">
-          <button class="ghost-button" value="cancel" type="submit">取消</button>
-          <button class="primary-button" value="default" type="submit">保存并自动分类</button>
+          <button class="ghost-button" value="cancel" type="button" data-close-import>取消</button>
+          <button class="primary-button" value="default" type="submit">保存并归档</button>
         </div>
       </form>
     </dialog>

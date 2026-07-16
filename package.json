@@ -1,0 +1,10 @@
+{
+  "name": "personal-bookmark-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "个人稍后阅读收藏网站，支持云端收藏、网页归档和备份导出。",
+  "dependencies": {
+    "@netlify/blobs": "^9.1.2"
+  }
+}

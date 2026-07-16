@@ -192,6 +192,9 @@ button {
 .ghost-button,
 .filter-tab,
 .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
   border: 1px solid var(--line);
   min-height: 40px;
@@ -498,6 +501,59 @@ button {
   gap: 8px;
 }
 
+.archive-actions,
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.button-link {
+  text-decoration: none;
+  text-align: center;
+}
+
+.disabled-button {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.warning-box {
+  border: 1px solid #f0d29d;
+  background: #fff8ec;
+  color: #8b5b13;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.reading-note {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.reading-note strong {
+  font-size: 13px;
+}
+
+.reading-note textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  color: var(--ink);
+  outline: 0;
+  resize: vertical;
+}
+
+.reading-note textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(23, 107, 82, 0.12);
+}
+
 .import-dialog {
   width: min(560px, calc(100vw - 24px));
   border: 0;
@@ -594,7 +650,9 @@ button {
 
   .top-actions,
   .dialog-actions,
-  .detail-actions {
+  .detail-actions,
+  .archive-actions,
+  .status-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
